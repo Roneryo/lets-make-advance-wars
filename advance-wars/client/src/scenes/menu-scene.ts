@@ -1,123 +1,117 @@
 import 'phaser';
-import { AnimatedTile } from '../utils/AnimatedTile';
-import { TilesetTileData } from '../utils/AnimatedTile';
-import { TileAnimationData } from '../utils/AnimatedTile';
+import { GameObjects } from 'phaser';
+
+import { Map } from '../gameObjetcs/Map';
 
 export class MenuScene extends Phaser.Scene {
-  private tilemapKey!: string;
-  private tilesetKey!: string;
-  private animatedTiles!: AnimatedTile[];
+  private map!: Map;
+  public character!: Phaser.Tilemaps.Tile;
+  public tile!: any;
+  public text!: GameObjects.Text;
+  public grid!: GameObjects.Grid;
+  public sprite!: any;
   constructor() {
     super({
       key: 'MenuScene'
     });
+    this.map=new Map();
   }
   init() {
-    this.tilemapKey = "../../assets/tilemaps/customMap.json";
-    this.tilesetKey = "../../assets/tilesets";
-    this.animatedTiles = [];
+    this.map.init();
   }
   preload(): void {
-    this.load.image('dessert-tiles', `${this.tilesetKey}/DESSERT3.png`);
-    this.load.image('sea-tiles', `${this.tilesetKey}/MAR2.png`);
-    this.load.image('idleRed-tiles', `${this.tilesetKey}/IdleRed.png`);
-    this.load.image('animated', `${this.tilesetKey}/AnimatedUnits.png`);
-    this.load.tilemapTiledJSON("map", this.tilemapKey);
+    this.map.preload(this)
+    this.load.tilemapTiledJSON("map", this.map.tilemapKey);
   }
-
   create(): void {
-    // const tilemap = this.make.tilemap({ key: this.tilemapKey });
-    // this.createLevelWithGrid();
-    this.createLevelWithTileMap();
+    this.map.createLevelWithTileMap(this);
+    this.character = this.map.animatedTiles[0].tile;
+    console.log(this.map.grid);
+    console.log(this.character.x, this.character.y)
+    this.inputHandler();
+    this.grid = this.add.grid(32*15, 32*10,
+      32*30, 32*20,
+      32, 32,
+      0, 0, 100, 0.05)
+    this.grid.setScale(1)
 
   }
-
   update(time: number, delta: number): void {
-    // this.checkMouse();
-    if (this.input.mousePointer.leftButtonDown()) {
-      console.log('se Clickeo')
-    }
-    this.animatedTiles.forEach(tile => tile.update(delta));
+    this.map.update(time, delta);
   }
-
   /*custom methods*/
   checkMouse(): void {
     let x = Math.round(this.input.mousePointer.x);
     let y = Math.round(this.input.mousePointer.y);
     console.log(x, y);
   }
-  //nivel por grid
-  createLevelWithGrid(): void {
-    const level = [
-      [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
-      [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
-      [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
-      [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
-      [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
-      [33, 12, 14, 14, 13, 33, 33, 33, 33, 33, 33],
-      [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
-      [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
-      [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
-      [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
-      [33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33],
-    ];
-    const map = this.make.tilemap({ data: level, tileWidth: 16, tileHeight: 16, height: 30, width: 30 });
-    const tiles = map.addTilesetImage("dessert-tiles");
-    const layer = map.createLayer(0, tiles, 0, 0);
-    layer.setScale(2.5, 2.5);
-  }
-  createLevelWithTileMap(): void {
-    const map = this.make.tilemap({ key: "map" });
-    console.log(map);
-    const dessert_tilesets = map.addTilesetImage("DESSERT2", "dessert-tiles");
-    const sea_tilesets = map.addTilesetImage("MAR2", "sea-tiles");
-    const idleSprites_tilesets = map.addTilesetImage("IdleRed", "idleRed-tiles");
+  cursorPosition({ x, y } :any) {
+    // let { gridMoveX, gridMoveY } = this.calculateGridPosition(x, y);
 
-    const animatedTile = map.tilesets[3];
-    console.log(animatedTile);
+    if (this.sprite === undefined) {
+      console.log(x,y)
+      // this.text = this.make.text({ text: "hola mundo", x, y, style: { color: "black" } })
+      // this.sprite = this.add.rectangle(gridMoveX, gridMoveY, 16, 16, 12)
+     } else {
+      console.log("xd");
+      // this.sprite.setDisplayOrigin(gridMoveX, gridMoveY)
+      // this.sprite.x = gridMoveX;
+      // this.sprite.y = gridMoveY;
 
-    const ground = map.createLayer(0, dessert_tilesets, 0, 0)
-    const sea = map.createLayer(4, sea_tilesets, 0, 0)
-
-    const tree = map.createLayer(1, dessert_tilesets, 0, 0)
-    const mountain = map.createLayer(2, dessert_tilesets, 0, 0)
-    const mountain2 = map.createLayer(3, dessert_tilesets, 0, 0)
-
-    const idleSprites = map.createLayer(5, idleSprites_tilesets, 0, 0)
-
-    idleSprites.setScale(2)
-    mountain.setScale(2)
-    mountain2.setScale(2)
-    ground.setScale(2)
-    sea.setScale(2)
-    tree.setScale(2)
-    // console.log(ground);
-    // console.log(sea);
-    // const tileData = idleSprites_tilesets.tileData as TilesetTileData;
-    this.makeTileAnimations(idleSprites_tilesets, map)
-    this.makeTileAnimations(sea_tilesets, map)
-
-  }
-  makeTileAnimations(tileSet: Phaser.Tilemaps.Tileset, map: Phaser.Tilemaps.Tilemap): void {
-    const tileData = tileSet.tileData as TilesetTileData
-    for (let tileid in tileData) {
-      map.layers.forEach(layer => {
-        // if (layer.tilemapLayer===null  || layer.tilemapLayer.type === "StaticTilemapLayer"  ) return;
-        layer.data.forEach(tileRow => {
-          tileRow.forEach(tile => {
-            if (tile.index - tileSet.firstgid === parseInt(tileid, 10)) {
-              this.animatedTiles.push(
-                new AnimatedTile(
-                  tile,
-                  tileData[tileid].animation as TileAnimationData,
-                  tileSet.firstgid
-                )
-              );
-            }
-          });
-        });
-      });
     }
+  }
+  calculateGridPosition(x: number, y: number): {gridMoveX:number,gridMoveY:number} {
+    let gridMoveX= (Math.floor(Math.floor(x)/32)*32);
+    let gridMoveY= (Math.floor(Math.floor(y)/32)*32);
+    // x = Math.round((Math.round(x) / 32));
+    // y = Math.round((Math.round(y) / 32));
+    return {gridMoveX,gridMoveY}
+  }
+  inputHandler(): void {
+    this.input.keyboard.addKeys("UP,DOWN,RIGHT,LEFT");
+    this.input.keyboard.on("keydown-A", () => {
+      console.log('A presionado')
+    })
+    this.input.keyboard.on("keydown-LEFT", () => {
+      console.log('LEFT presionado')
+      this.character.pixelX -= 16;
+    })
+    this.input.keyboard.on("keydown-RIGHT", () => {
+      console.log('RIGHT presionado')
+      this.character.pixelX += 16;
+    })
+    this.input.keyboard.on("keydown-UP", () => {
+      console.log('UP presionado')
+      this.character.pixelY -= 16;
+    })
+    this.input.keyboard.on("keydown-DOWN", () => {
+      console.log('UP presionado')
+      this.character.pixelY += 16;
+    })
+    this.input.on('pointerdown', (e: any) => {
+      if (e.button === 0) {
+      // console.log("left clickdown", e);
+        console.log(this);
+      }
+    })
+    this.input.on('pointerup', (e: any) => {
+      if (e.button === 0) {
+        let { x, y } = e.position;
+        let { gridMoveX, gridMoveY } = this.calculateGridPosition(x, y)
+        let tile = this.map.grid.getTileAt(7,9)
+        console.log(tile.setFlipX(true))
+        // let text = this.make.text({ text: "hola mundo", x: gridMoveX, y: gridMoveY, style: { color: "black" } });
+        // let sprite = this.make.tilemap({key:"map",width:48,height:432,tileWidth:16,tileHeight:16})
+        //this.make.tileSprite({ x: gridMoveX+13, y: gridMoveY+13, key: "idleRed-tiles", width: 16, height: 16 }, true)
+
+
+      }
+      console.log(e);
+    })
+    this.input.on('pointermove', (e: any) => {
+      // this.cursorPosition(e);
+    })
+
   }
 }
 

@@ -4,7 +4,7 @@ export type TileAnimationData = Array<{ duration: number, tileid: number }>;
 
 export class AnimatedTile {
 
-  private tile: Phaser.Tilemaps.Tile;
+  public tile: Phaser.Tilemaps.Tile;
   private tileAnimationData: TileAnimationData;
   private firstgid: number;
   private elapsedTime: number;

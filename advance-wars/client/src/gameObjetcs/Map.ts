@@ -64,7 +64,7 @@ export class  Map extends Phaser.Tilemaps.MapData {
     const tileData = tileSet.tileData as TilesetTileData
     for (let tileid in tileData) {
       map.layers.forEach(layer => {
-        // if (layer.tilemapLayer===null  || layer.tilemapLayer.type === "StaticTilemapLayer"  ) return;
+         if (layer.tilemapLayer===null  || layer.tilemapLayer.type === "StaticTilemapLayer"  ) return;
         layer.data.forEach(tileRow => {
           tileRow.forEach(tile => {
             if (tile.index - tileSet.firstgid === parseInt(tileid, 10)) {

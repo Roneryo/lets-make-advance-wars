@@ -101,7 +101,7 @@ export class MenuScene extends Phaser.Scene {
 
       // console.log("left clickdown", e);
         // console.log(this);
-        let copyTile = this.map.grid.copy(7, 9, 1, 1, gridMoveX, gridMoveY, undefined, "World")
+        let copyTile = this.map.grid.copy(7, 9, 1, 1, gridMoveX, gridMoveY, undefined, "World");
 
       }
     })

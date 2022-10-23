@@ -1,4 +1,3 @@
-import 'phaser';
 import { GameObjects } from 'phaser';
 
 import { Map } from '../gameObjetcs/Map';
@@ -10,6 +9,7 @@ export class MenuScene extends Phaser.Scene {
   public text!: GameObjects.Text;
   public grid!: GameObjects.Grid;
   public sprite!: Phaser.Tilemaps.Tilemap;
+  public units  !: any[];
   constructor() {
     super({
       key: 'MenuScene'
@@ -18,6 +18,7 @@ export class MenuScene extends Phaser.Scene {
   }
   init() {
     this.map.init();
+    this.units=[];
   }
   preload(): void {
     this.map.preload(this)
@@ -46,7 +47,7 @@ export class MenuScene extends Phaser.Scene {
     let y = Math.round(this.input.mousePointer.y);
     console.log(x, y);
   }
-  cursorPosition({ x, y } :any) {
+  cursorPosition({ x, y } : Phaser.Input.Pointer) {
     let { gridMoveX, gridMoveY } = this.calculateGridPosition(x, y);
 
     if (this.sprite === undefined) {
@@ -67,8 +68,8 @@ export class MenuScene extends Phaser.Scene {
     }
   }
   calculateGridPosition(x: number, y: number): {gridMoveX:number,gridMoveY:number} {
-    let gridMoveX= (Math.floor(Math.floor(x)/32)*32)/32;
-    let gridMoveY= (Math.floor(Math.floor(y)/32)*32)/32;
+    let gridMoveX= (Math.floor(Math.floor(x)/32)*32)+12;
+    let gridMoveY= (Math.floor(Math.floor(y)/32)*32)+8;
     // x = Math.round((Math.round(x) / 32));
     // y = Math.round((Math.round(y) / 32));
     return {gridMoveX,gridMoveY}
@@ -96,23 +97,28 @@ export class MenuScene extends Phaser.Scene {
     })
     this.input.on('pointerdown', (e: any) => {
       if (e.button === 0) {
-        let { x, y } = e.position;
-        let { gridMoveX, gridMoveY } = this.calculateGridPosition(x, y)
+        // let { x, y } = e.position;
+        // let { gridMoveX, gridMoveY } = this.calculateGridPosition(x, y)
 
       // console.log("left clickdown", e);
         // console.log(this);
-        let copyTile = this.map.grid.copy(7, 9, 1, 1, gridMoveX, gridMoveY, undefined, "World");
+        // let copyTile = this.map.grid.copy(7, 9, 1, 1, gridMoveX, gridMoveY, undefined, "World");
 
       }
     })
-    this.input.on('pointerup', (e: any) => {
+    this.input.on('pointerup', (e: Phaser.Input.Pointer) => {
       if (e.button === 0) {
         let { x, y } = e.position;
         let { gridMoveX, gridMoveY } = this.calculateGridPosition(x, y)
         let tile = this.data
-        console.log(tile);
+        // console.log(tile);
+        console.log(this)
         // console.log(tile.setFlipX(!tile.flipX))e
-        console.log(gridMoveX, gridMoveY)
+        console.log(gridMoveX, gridMoveY);
+        let unit = this.add.sprite(gridMoveX,gridMoveY,"animatedUnits");
+        unit.setScale(2);
+        unit.play("leftRun")
+        this.units.push(unit);
         // console.log(copyTile)
         // let text = this.make.text({ text: "hola mundo", x: gridMoveX, y: gridMoveY, style: { color: "black" } });
         // let sprite = this.make.tilemap({key:"map",width:48,height:432,tileWidth:16,tileHeight:16})

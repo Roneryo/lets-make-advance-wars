@@ -10,6 +10,7 @@ export class  Map extends Phaser.Tilemaps.MapData {
   public animatedTiles!: AnimatedTile[];
 
   private tilesetURL!: { name: string, image: string }[];
+  private spriteSheet!: { name: string, image: string }[];
 
   constructor() {
     super();
@@ -17,7 +18,10 @@ export class  Map extends Phaser.Tilemaps.MapData {
       {name:"dessert-tiles",image:"DESSERT3.png"},
       {name:"sea-tiles",image:"MAR2.png"},
       {name:"idleRed-tiles",image:"IdleRed.png"},
-      {name:"animated",image:"AnimatedUnits.png"}
+      // {name:"animated",image:"AnimatedUnits.png"}
+    ]
+    this.spriteSheet = [
+       {name:"animatedUnits",image:"AnimatedUnits.png"}
     ]
   }
   public init():void {
@@ -29,12 +33,30 @@ export class  Map extends Phaser.Tilemaps.MapData {
     this.tilesetURL.forEach(tileURL => {
       scene.load.image(tileURL.name, `${this.tilesetKey}${tileURL.image }`);
     })
+    this.spriteSheet.forEach(spriteURL =>{
+      scene.load.spritesheet(spriteURL.name,`${this.tilesetKey}${spriteURL.image}`,{ frameWidth: 24, frameHeight: 24 })
+    })
   }
   update(time: number, delta: number): void {
     this.animatedTiles.forEach(tile => tile.update(delta));
   }
+  createSpriteAnimations(scene: Phaser.Scene): void {
+    scene.anims.create({
+      key: "rightRun",
+      frameRate: 10,
+      frames: scene.anims.generateFrameNumbers("animatedUnits", { start: 3, end: 5 }),
+      repeat: -1
+  });
 
+  scene.anims.create({
+      key: "leftRun",
+      frameRate: 10,
+      frames: scene.anims.generateFrameNumbers("animatedUnits", { start: 0, end: 2 }),
+      repeat: -1
+  });
+  }
   createLevelWithTileMap(scene: Phaser.Scene): void {
+    this.createSpriteAnimations(scene);
     this.grid = scene.make.tilemap({ key: "map" });
     // console.log(map);
     const dessert_tilesets = this.grid.addTilesetImage("DESSERT2", "dessert-tiles");

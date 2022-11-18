@@ -9,7 +9,7 @@ export class MenuScene extends Phaser.Scene {
   public text!: GameObjects.Text;
   public grid!: GameObjects.Grid;
   public sprite!: Phaser.Tilemaps.Tilemap;
-  public units  !: any[];
+  public units  !: GameObjects.Sprite[];
   constructor() {
     super({
       key: 'MenuScene'
@@ -68,8 +68,8 @@ export class MenuScene extends Phaser.Scene {
     }
   }
   calculateGridPosition(x: number, y: number): {gridMoveX:number,gridMoveY:number} {
-    let gridMoveX= (Math.floor(Math.floor(x)/32)*32)+12;
-    let gridMoveY= (Math.floor(Math.floor(y)/32)*32)+8;
+    let gridMoveX= (Math.floor(Math.floor(x)/32)*32)/32;
+    let gridMoveY= (Math.floor(Math.floor(y)/32)*32)/32;
     // x = Math.round((Math.round(x) / 32));
     // y = Math.round((Math.round(y) / 32));
     return {gridMoveX,gridMoveY}
@@ -112,13 +112,33 @@ export class MenuScene extends Phaser.Scene {
         let { gridMoveX, gridMoveY } = this.calculateGridPosition(x, y)
         let tile = this.data
         // console.log(tile);
-        console.log(this)
-        // console.log(tile.setFlipX(!tile.flipX))e
+        // console.log(this)
+        // console.log(tile.setFlipX(!tile.flipX))
         console.log(gridMoveX, gridMoveY);
+/*
         let unit = this.add.sprite(gridMoveX,gridMoveY,"animatedUnits");
         unit.setScale(2);
         unit.play("leftRun")
         this.units.push(unit);
+*/      let aTile = this.map.grid.getTileAt(gridMoveX,gridMoveY);
+
+        // aTile.alpha===1 ? aTile.alpha=0 : aTile.alpha=1
+        if(aTile.alpha===1){
+          aTile.alpha=0;
+          let unit = this.add.sprite((gridMoveX*32)+12,(gridMoveY*32)+8,"animatedUnits");
+          unit.setScale(2);
+          unit.play("leftRun")
+          this.units.push(unit);
+
+        }else{
+          aTile.alpha=1;
+          this.units.forEach(unit=>{
+            unit.destroy();
+          });
+          this.units = [];
+
+        }
+        console.log(aTile.alpha);
         // console.log(copyTile)
         // let text = this.make.text({ text: "hola mundo", x: gridMoveX, y: gridMoveY, style: { color: "black" } });
         // let sprite = this.make.tilemap({key:"map",width:48,height:432,tileWidth:16,tileHeight:16})
@@ -129,7 +149,7 @@ export class MenuScene extends Phaser.Scene {
       // console.log(e);
     })
     this.input.on('pointermove', (e: any) => {
-      this.cursorPosition(e);
+      // this.cursorPosition(e);
 
     })
 

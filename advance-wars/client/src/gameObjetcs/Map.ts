@@ -42,18 +42,18 @@ export class  Map extends Phaser.Tilemaps.MapData {
   }
   createSpriteAnimations(scene: Phaser.Scene): void {
     scene.anims.create({
+      key: "leftRun",
+      frameRate: 10,
+      frames: scene.anims.generateFrameNumbers("animatedUnits", { start: 0, end: 2 }),
+      repeat: -1
+  });
+    scene.anims.create({
       key: "rightRun",
       frameRate: 10,
       frames: scene.anims.generateFrameNumbers("animatedUnits", { start: 3, end: 5 }),
       repeat: -1
   });
 
-  scene.anims.create({
-      key: "leftRun",
-      frameRate: 10,
-      frames: scene.anims.generateFrameNumbers("animatedUnits", { start: 0, end: 2 }),
-      repeat: -1
-  });
   }
   createLevelWithTileMap(scene: Phaser.Scene): void {
     this.createSpriteAnimations(scene);
